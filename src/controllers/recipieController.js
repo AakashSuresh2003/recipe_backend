@@ -57,3 +57,46 @@ exports.searchRecipes = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.editRecipe = async (req, res) => {
+  const { recipeId } = req.params;
+  const updatedData = req.body;
+
+  try {
+    const updatedRecipe = await Recipe.findOneAndUpdate(
+      { recipeId },
+      updatedData,
+      { new: true, runValidators: true } 
+    );
+
+    if (!updatedRecipe) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
+
+    res.status(200).json({
+      message: "Recipe updated successfully",
+      recipe: updatedRecipe,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating recipe", error });
+  }
+};
+
+exports.deleteRecipe = async (req, res) => {
+  const { recipeId } = req.params;
+
+  try {
+    const deletedRecipe = await Recipe.findOneAndDelete({ recipeId });
+
+    if (!deletedRecipe) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
+
+    res.status(200).json({
+      message: "Recipe deleted successfully",
+      recipe: deletedRecipe,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting recipe", error });
+  }
+};
